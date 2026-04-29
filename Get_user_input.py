@@ -1,9 +1,9 @@
 import pandas as pd
 import json
-import main as mn
+df = pd.read_csv('syn_data.csv')
 CSV_PATH  = "syn_data.csv"   # update path if needed
 JSON_PATH = "syn_data.json"  # update path if needed
-
+max_rows = df.shape[0]
 def get_input(prompt, valid_options=None):
     while True:
         value = input(prompt).strip()
@@ -45,4 +45,24 @@ print(f"✓ CSV saved!  ({len(df)} rows)")
 # ── Sync to JSON ──────────────────────────────────────────────────────────────
 df.to_json(JSON_PATH, orient="records", indent=4)
 print(f"✓ JSON synced! ({len(df)} records)")
-mn.find_a_match()
+my_rows = df[df['ID'] == entry["ID"]]
+
+if df.iloc[my_rows.index[0], 2] == "Student":
+    for s in my_rows.index:
+        c_row = 0
+        while c_row < max_rows:
+
+            if df.iloc[s, 2] == df.iloc[c_row, 2]:
+                c_row += 1
+
+            else:
+                if df.iloc[s, 3:7].tolist() == df.iloc[c_row, 3:7].tolist():
+                    print("match found")
+                    print(df.iloc[c_row])
+                    c_row += 1
+                else:
+                    c_row += 1
+
+else:
+    print("your a Tutor")
+    
