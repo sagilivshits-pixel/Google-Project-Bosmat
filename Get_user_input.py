@@ -1,6 +1,6 @@
 import pandas as pd
 import json
-
+import main as mn
 CSV_PATH  = "syn_data.csv"   # update path if needed
 JSON_PATH = "syn_data.json"  # update path if needed
 
@@ -44,4 +44,5 @@ print(f"✓ CSV saved!  ({len(df)} rows)")
 
 # ── Sync to JSON ──────────────────────────────────────────────────────────────
 df.to_json(JSON_PATH, orient="records", indent=4)
-print(f"✓ JSON synced! ({len(df)} records)") 
+print(f"✓ JSON synced! ({len(df)} records)")
+mn.find_a_match()
