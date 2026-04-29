@@ -21,7 +21,7 @@ if df .iloc[my_rows.index[0],2] == "Student":
 
             else:
                 if df.iloc[s, 3:7].tolist() == df.iloc[c_row, 3:7].tolist():
-                    print("match")
+                    print("match found")
                     print(df.iloc[c_row])
                     c_row += 1
                 else:
