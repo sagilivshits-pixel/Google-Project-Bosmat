@@ -1,4 +1,5 @@
 import pandas as pd
+
 def find_a_match():
     df = pd.read_csv('syn_data.csv')
     c_row = 0
@@ -6,18 +7,15 @@ def find_a_match():
     print(max_rows)
     only_ids = df['ID'].unique().tolist()
     print(only_ids)
-    c_id = 0
-    your_id = only_ids[c_id]
 
-
+    for your_id in only_ids:
         my_rows = df[df['ID'] == your_id]
-
-        if df .iloc[my_rows.index[0],2] == "Student":
+        if df.iloc[my_rows.index[0], 2] == "Student":
             for s in my_rows.index:
                 c_row = 0
                 while c_row < max_rows:
 
-                    if df .iloc[s,2] == df.iloc[c_row, 2]:
+                    if df.iloc[s, 2] == df.iloc[c_row, 2]:
                         c_row += 1
 
                     else:
@@ -30,5 +28,4 @@ def find_a_match():
 
         else:
             print("your a Tutor")
-
 find_a_match()
