@@ -6,7 +6,6 @@ def find_a_match():
     max_rows = df.shape[0]
     print(max_rows)
     only_ids = df['ID'].unique().tolist()
-    print(only_ids)
 
     for your_id in only_ids:
         my_rows = df[df['ID'] == your_id]
@@ -20,12 +19,11 @@ def find_a_match():
 
                     else:
                         if df.iloc[s, 3:7].tolist() == df.iloc[c_row, 3:7].tolist():
-                            print("match found")
-                            print(df.iloc[c_row])
+                            print("match found for you", df.iloc[s,0], "your match is:", df.iloc[c_row, 1])
                             c_row += 1
                         else:
                             c_row += 1
 
         else:
-            print("your a Tutor")
+            print("your a Tutor" ,df.iloc[my_rows.index[0], 1])
 find_a_match()
