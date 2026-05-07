@@ -2,7 +2,7 @@ import pandas as pd
 import json
 df = pd.read_csv('syn_data.csv')
 CSV_PATH  = "syn_data.csv"   # update path if needed
-JSON_PATH = "syn_data.json"  # update path if needed
+
 max_rows = df.shape[0]
 def get_input(prompt, valid_options=None):
     while True:
@@ -42,10 +42,6 @@ except FileNotFoundError:
 df.to_csv(CSV_PATH, index=False)
 print(f"✓ CSV saved!  ({len(df)} rows)")
 
-# ── Sync to JSON ──────────────────────────────────────────────────────────────
-df.to_json(JSON_PATH, orient="records", indent=4)
-print(f"✓ JSON synced! ({len(df)} records)")
-my_rows = df[df['ID'] == entry["ID"]]
 
 if df.iloc[my_rows.index[0], 2] == "Student":
     for s in my_rows.index:
