@@ -56,4 +56,7 @@ ID,Name,Tutor / Student,Subject,Online / F2F,Day,Hour,Phone number
 915847263,gal gadot,Student,Math,F2F,Monday,16:00,0530214789
 896412735,Alon greif,Student,Math,F2F,Monday,16:00,0503698741
 896412735,Alon greif,Student,Physics,F2F,Monday,14:00,0897653421
-879123456,Yoni Grief,Tutor,Physics,F2F,Monday,"",0543737121
+879123456,Yoni Grief,Tutor,Physics,F2F,Monday,,0543737121
+978675645342,max beman,Student,Math,F2F,Monday,16:00,0897654123
+335326995,yulia jones,Student,Math,F2F,Monday,16:00,0563938123
+

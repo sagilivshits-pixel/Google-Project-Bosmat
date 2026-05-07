@@ -6,7 +6,6 @@ def find_a_match():
     max_rows = df.shape[0]
     print(max_rows)
     only_ids = df['ID'].unique().tolist()
-
     for your_id in only_ids:
         my_rows = df[df['ID'] == your_id]
         if df.iloc[my_rows.index[0], 2] == "Student":

@@ -1,5 +1,6 @@
 import pandas as pd
 import json
+import streamlit as st
 df = pd.read_csv('syn_data.csv')
 CSV_PATH  = "syn_data.csv"   # update path if needed
 
@@ -17,48 +18,29 @@ def get_input(prompt, valid_options=None):
             print("  This field cannot be empty.")
 
 # ── Collect input ─────────────────────────────────────────────────────────────
-print("\n─── Add New Entry ───────────────────────────")
-
-entry = {
-    "ID":              get_input("ID: "),
-    "Name":            get_input("Full name: "),
-    "Tutor / Student": get_input("Role [Tutor/Student]: ", ["Tutor", "Student"]),
-    "Subject":         get_input("Subject [Math/English/Physics/Biology/Chemistry/History/Computer Science]: ",
-                                  ["Math", "English", "Physics", "Biology", "Chemistry", "History", "Computer Science"]),
-    "Online / F2F":    get_input("Session type [Online/F2F]: ", ["Online", "F2F"]),
-    "Day":             get_input("Day [Monday/Tuesday/Wednesday/Thursday/Friday/Saturday/Sunday]: ",
-                                  ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]),
-    "Hour":            get_input("Hour (e.g. 09:00): "),
-    "Phone number":    get_input("Phone number (e.g. 555-1234): "),
-}
-
+st.title("entry")
+with st.form("entry_form"):
+    entry = {
+        "ID":              st.text_input("Enter ID :"),
+        "Name":            st.text_input("Enter your name :"),
+        "Tutor / Student": st.selectbox("what are you?",["Tutor","Student"]),
+        "Subject":         st.multiselect("Select your subjects", ["Math", "English", "Physics", "Biology", "Chemistry", "History", "Computer Science"]),
+        "Online / F2F":    st.selectbox("Face to face or online?",["Online","F2F"]),
+        # "Day":             st.multiselect("select the days" , [
+        # "Hour":            get_input("Hour (e.g. 09:00): "),
+        # "Phone number":    get_input("Phone number (e.g. 555-1234): "),
+    }
+    submitted = st.form_submit_button("Save Entry")
 # ── Append to CSV ─────────────────────────────────────────────────────────────
-try:
-    df = pd.read_csv(CSV_PATH, dtype={"ID": str, "Phone number": str})
-    df = pd.concat([df, pd.DataFrame([entry])], ignore_index=True)
-except FileNotFoundError:
-    df = pd.DataFrame([entry])
+if submitted:
+    try:
+        df = pd.read_csv(CSV_PATH, dtype={"ID": str, "Phone number": str})
+        df = pd.concat([df, pd.DataFrame([entry])], ignore_index=True)
+    except FileNotFoundError:
+        df = pd.DataFrame([entry])
 
-df.to_csv(CSV_PATH, index=False)
-print(f"✓ CSV saved!  ({len(df)} rows)")
+    df.to_csv(CSV_PATH, index=False)
+    print(f"✓ CSV saved!  ({len(df)} rows)")
+    st.success(f"CSV saved!  ({len(df)} rows)")
 
 
-if df.iloc[my_rows.index[0], 2] == "Student":
-    for s in my_rows.index:
-        c_row = 0
-        while c_row < max_rows:
-
-            if df.iloc[s, 2] == df.iloc[c_row, 2]:
-                c_row += 1
-
-            else:
-                if df.iloc[s, 3:7].tolist() == df.iloc[c_row, 3:7].tolist():
-                    print("match found")
-                    print(df.iloc[c_row])
-                    c_row += 1
-                else:
-                    c_row += 1
-
-else:
-    print("your a Tutor")
-    
