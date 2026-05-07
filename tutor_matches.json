@@ -1,0 +1,80 @@
+[
+    {
+        "Name": "Bob Brown",
+        "Phone": "555-1409",
+        "Day": "Sunday",
+        "Hour": "12:00"
+    },
+    {
+        "Name": "Diana Davis",
+        "Phone": "555-5012",
+        "Day": "Thursday",
+        "Hour": "09:00"
+    },
+    {
+        "Name": "Charlie Clark",
+        "Phone": "555-5506",
+        "Day": "Wednesday",
+        "Hour": "10:00"
+    },
+    {
+        "Name": "Bob Brown",
+        "Phone": "555-1409",
+        "Day": "Thursday",
+        "Hour": "12:00"
+    },
+    {
+        "Name": "Diana Davis",
+        "Phone": "555-5012",
+        "Day": "Sunday",
+        "Hour": "08:00"
+    },
+    {
+        "Name": "Evan Evans",
+        "Phone": "555-4657",
+        "Day": "Friday",
+        "Hour": "11:00"
+    },
+    {
+        "Name": "Hannah Harris",
+        "Phone": "555-9935",
+        "Day": "Tuesday",
+        "Hour": "13:00"
+    },
+    {
+        "Name": "Hannah Harris",
+        "Phone": "555-9935",
+        "Day": "Monday",
+        "Hour": "16:00"
+    },
+    {
+        "Name": "Hannah Harris",
+        "Phone": "555-9935",
+        "Day": "Monday",
+        "Hour": "16:00"
+    },
+    {
+        "Name": "Hannah Harris",
+        "Phone": "555-9935",
+        "Day": "Monday",
+        "Hour": "16:00"
+    },
+    {
+        "Name": "Hannah Harris",
+        "Phone": "555-9935",
+        "Day": "Monday",
+        "Hour": "16:00"
+    },
+    {
+        "Name": "Hannah Harris",
+        "Phone": "555-9935",
+        "Day": "Monday",
+        "Hour": "16:00"
+    },
+    {
+        "Name": "Hannah Harris",
+        "Phone": "555-9935",
+        "Day": "Monday",
+        "Hour": "16:00"
+    }
+]
