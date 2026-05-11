@@ -26,7 +26,7 @@ with st.form("entry_form"):
         "Tutor / Student": st.selectbox("what are you?",["Tutor","Student"]),
         "Subject":         st.multiselect("Select your subjects", ["Math", "English", "Physics", "Biology", "Chemistry", "History", "Computer Science"]),
         "Online / F2F":    st.selectbox("Face to face or online?",["Online","F2F"]),
-        # "Day":             st.multiselect("select the days" , [
+        # "Day":             st.multiselect("select the days" , z
         # "Hour":            get_input("Hour (e.g. 09:00): "),
         # "Phone number":    get_input("Phone number (e.g. 555-1234): "),
     }
