@@ -26,7 +26,8 @@ def find_a_match():
                                     "Name": df.iloc[c_row, 1],
                                     "Phone": df.iloc[c_row, 7],
                                     "Day": df.iloc[c_row, 5],
-                                    "Hour": df.iloc[c_row, 6]
+                                    "Hour": df.iloc[c_row, 6],
+                                    "Subject" : df.iloc[c_row, 3]
                                 }
 
                                 # שימוש באותו שם משתנה בדיוק (current_student_id)

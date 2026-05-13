@@ -4,7 +4,8 @@
             "Name": "Bob Brown",
             "Phone": "555-1409",
             "Day": "Sunday",
-            "Hour": "12:00"
+            "Hour": "12:00",
+            "Subject": "History"
         }
     ],
     "758909325": [
@@ -12,7 +13,8 @@
             "Name": "Diana Davis",
             "Phone": "555-5012",
             "Day": "Thursday",
-            "Hour": "09:00"
+            "Hour": "09:00",
+            "Subject": "Math"
         }
     ],
     "685155652": [
@@ -20,7 +22,8 @@
             "Name": "Charlie Clark",
             "Phone": "555-5506",
             "Day": "Wednesday",
-            "Hour": "10:00"
+            "Hour": "10:00",
+            "Subject": "Biology"
         }
     ],
     "527043571": [
@@ -28,7 +31,8 @@
             "Name": "Bob Brown",
             "Phone": "555-1409",
             "Day": "Thursday",
-            "Hour": "12:00"
+            "Hour": "12:00",
+            "Subject": "Computer Science"
         }
     ],
     "143594589": [
@@ -36,13 +40,15 @@
             "Name": "Diana Davis",
             "Phone": "555-5012",
             "Day": "Sunday",
-            "Hour": "08:00"
+            "Hour": "08:00",
+            "Subject": "English"
         },
         {
             "Name": "shira grief",
             "Phone": "343-434-3434",
             "Day": "Wednesday",
-            "Hour": "16:00"
+            "Hour": "16:00",
+            "Subject": "English"
         }
     ],
     "572320701": [],
@@ -51,13 +57,15 @@
             "Name": "Evan Evans",
             "Phone": "555-4657",
             "Day": "Friday",
-            "Hour": "11:00"
+            "Hour": "11:00",
+            "Subject": "English"
         },
         {
             "Name": "Hannah Harris",
             "Phone": "555-9935",
             "Day": "Tuesday",
-            "Hour": "13:00"
+            "Hour": "13:00",
+            "Subject": "Computer Science"
         }
     ],
     "565985210": [],
@@ -66,7 +74,8 @@
             "Name": "Hannah Harris",
             "Phone": "555-9935",
             "Day": "Monday",
-            "Hour": "16:00"
+            "Hour": "16:00",
+            "Subject": "Math"
         }
     ],
     "624821769": [],
@@ -76,7 +85,8 @@
             "Name": "Hannah Harris",
             "Phone": "555-9935",
             "Day": "Monday",
-            "Hour": "16:00"
+            "Hour": "16:00",
+            "Subject": "Math"
         }
     ],
     "34895167": [],
@@ -85,7 +95,8 @@
             "Name": "Hannah Harris",
             "Phone": "555-9935",
             "Day": "Monday",
-            "Hour": "16:00"
+            "Hour": "16:00",
+            "Subject": "Math"
         }
     ],
     "485926317": [
@@ -93,7 +104,8 @@
             "Name": "Hannah Harris",
             "Phone": "555-9935",
             "Day": "Monday",
-            "Hour": "16:00"
+            "Hour": "16:00",
+            "Subject": "Math"
         }
     ],
     "915847263": [
@@ -101,7 +113,8 @@
             "Name": "Hannah Harris",
             "Phone": "555-9935",
             "Day": "Monday",
-            "Hour": "16:00"
+            "Hour": "16:00",
+            "Subject": "Math"
         }
     ],
     "896412735": [
@@ -109,7 +122,8 @@
             "Name": "Hannah Harris",
             "Phone": "555-9935",
             "Day": "Monday",
-            "Hour": "16:00"
+            "Hour": "16:00",
+            "Subject": "Math"
         }
     ],
     "978675645342": [
@@ -117,7 +131,8 @@
             "Name": "Hannah Harris",
             "Phone": "555-9935",
             "Day": "Monday",
-            "Hour": "16:00"
+            "Hour": "16:00",
+            "Subject": "Math"
         }
     ],
     "335326995": [
@@ -125,7 +140,8 @@
             "Name": "Hannah Harris",
             "Phone": "555-9935",
             "Day": "Monday",
-            "Hour": "16:00"
+            "Hour": "16:00",
+            "Subject": "Math"
         }
     ],
     "223366998": []
