@@ -1,4 +1,3 @@
-import streamlit as st
 import json
 import os
 
@@ -22,7 +21,8 @@ def save_appointment(student_id, tutor_info):
         "tutor_name": tutor_info['Name'],
         "day": tutor_info['Day'],
         "hour": tutor_info['Hour'],
-        "subject": tutor_info.get('Subject', 'לא צוין')  # הנחה שיש שדה Subject במקור
+        "phone": tutor_info ['Phone'],
+        "subject": tutor_info.get('Subject', ['Subject'])  # הנחה שיש שדה Subject במקור
     }
 
     appointments.append(new_entry)
@@ -54,12 +54,28 @@ if submitted:
 
 if st.session_state.search_done:
     user_id = st.session_state.user_id
-
     if not user_id.isdigit() or len(user_id) < 9:
         st.error("נא להזין תעודת זהות תקינה (9 ספרות).")
     elif user_id in data:
-        all_tutors = data[user_id]
+        user_appointments = [app for app in appointments if app.get("student_id") == user_id]
 
+        # הוספנו תנאי: רשימת הפגישות תוצג רק אם show_appointments הוא True
+        if user_appointments:
+            # אם נמצאו פגישות, נציג הודעה מתאימה ואת הפרטים
+            st.warning("כבר קבעת פגישה במערכת:")
+            for app in user_appointments:
+                # משתמשים ב-.get למקרה שיש רשומות ישנות בקובץ שלא שמרנו בהן את הטלפון בעבר
+                phone = app.get('phone', ['Phone'])
+                st.info(
+                    f" *תלמיד:* {app['student_id']}  \n"
+                    f" *מורה:* {app['tutor_name']}  \n"
+                    f" *מקצוע:* {app.get('subject', ['Subject'])}  \n"
+                    f" *יום:*  {app['day']},*שעה:* {app['hour']}  \n"
+                    f" *טלפון:* {phone}"
+                )
+
+            st.divider()  # קו הפרדה ויזואלי בין הפגישות הקיימות למורים הפנויים
+        all_tutors = data[user_id]
         # --- לוגיקת הסינון ---
         # אנחנו בונים רשימה של "מורים תפוסים" לפי מפתח של שם+יום+שעה+מקצוע
         busy_slots = [
@@ -70,27 +86,29 @@ if st.session_state.search_done:
         # מציגים רק מורים שלא נמצאים ב-busy_slots
         available_tutors = [
             t for t in all_tutors
-            if f"{t['Name']}{t['Day']}{t['Hour']}_{t.get('Subject', 'לא צוין')}" not in busy_slots
+            if f"{t['Name']}{t['Day']}{t['Hour']}_{t.get('Subject',['Subject'])}" not in busy_slots
         ]
 
         if available_tutors:
-            st.success(f"מצאנו עבורך {len(available_tutors)} מורים פנויים:")
+            st.subheader("מורים נוספים שזמינים עבורך:")
             cols = st.columns(min(len(available_tutors), 3))  # הגבלה ל-3 עמודות בשורה לנראות
 
             for index, tutor_info in enumerate(available_tutors):
                 with cols[index % 3]:
-                    st.info(f"*{tutor_info['Name']}*")
-                    st.write(f" מקצוע: {tutor_info.get('Subject', 'לא צוין')}")
-                    st.write(f" יום {tutor_info['Day']}, שעה {tutor_info['Hour']}")
-                    st.write(f" {tutor_info['Phone']}")
+                    st.info(f"*{tutor_info['Name']}*\n")
+                    st.write(f" מקצוע: {tutor_info.get('Subject',['Subject'])}\n")
+                    st.write(f" יום:{tutor_info['Day']}\n")
+                    st.write(f" שעה:{tutor_info['Hour']}\n")
+                    st.write(f"טלפון:{tutor_info['Phone']}")
 
                     if st.button(f"קביעת פגישה", key=f"btn_{index}"):
                         save_appointment(user_id, tutor_info)
-                        st.success(f"נקבעה פגישה עם {tutor_info['Name']}!")
+                        st.toast(f"נקבעה פגישה עם {tutor_info['Name']}!")
                         st.balloons()
-                        # ריצה מחדש כדי לעדכן את הרשימה ולהעלים את המורה שתפסנו
                         st.rerun()
-        else:
+
+                        # שלב 4: אם אין מורים פנויים וגם התלמיד לא קבע כלום בעצמו
+        elif not user_appointments:
             st.warning("כל המורים המתאימים לך כבר תפוסים בשעות אלו.")
-    else:
-        st.error("מספר תעודת הזהות לא נמצא.")
+else:
+    st.error("מספר תעודת הזהות לא נמצא במאגר.")
