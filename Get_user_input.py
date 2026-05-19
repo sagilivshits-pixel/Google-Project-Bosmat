@@ -14,9 +14,14 @@ if ID_BUTTON:
     if not entry["ID"]:
         st.error("Please write an id")
     else:
-        df_existing = pd.read_csv(CSV_PATH)
-        if entry["ID"] in df_existing["ID"].values:
-            st.error("user exists please sign-in")
+        try:
+            df_existing = pd.read_csv(CSV_PATH, dtype={"ID": str})
+
+            if entry["ID"] in df_existing["ID"].values:
+                st.error("User exists, please go to sign-in")
+        except FileNotFoundError:
+            # If the file doesn't exist yet, there are no existing users to check
+            pass
 with st.form("entry_form"):
     col1, col2 = st.columns(2)
     with col1:
