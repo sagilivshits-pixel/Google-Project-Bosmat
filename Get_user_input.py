@@ -6,18 +6,18 @@ CSV_PATH = "syn_data.csv"
 # ── Collect input ─────────────────────────────────────────────────────────────
 st.title("Tutor/Student Entry Form")
 with st.form("ID form"):
-    entry = {
+    ID_entry = {
         "ID": st.text_input("enter id :")
     }
     ID_BUTTON = st.form_submit_button("Submit ID ")
 if ID_BUTTON:
-    if not entry["ID"]:
+    if not ID_entry["ID"]:
         st.error("Please write an id")
     else:
         try:
             df_existing = pd.read_csv(CSV_PATH, dtype={"ID": str})
 
-            if entry["ID"] in df_existing["ID"].values:
+            if ID_entry["ID"] in df_existing["ID"].values:
                 st.error("User exists, please go to sign-in")
         except FileNotFoundError:
             # If the file doesn't exist yet, there are no existing users to check
@@ -49,8 +49,8 @@ if submitted:
         else:
                 # Create DataFrame and explode the lists into separate rows
                 new_entry_df = pd.DataFrame([entry])
+                new_entry_df["ID"] = ID_entry["ID"]
                 new_entry_df = new_entry_df.explode('Subject').explode('Day')
-
                 try:
                     df_existing = pd.read_csv(CSV_PATH, dtype={"ID": str, "Phone number": str})
                     df = pd.concat([df_existing, new_entry_df], ignore_index=True)
