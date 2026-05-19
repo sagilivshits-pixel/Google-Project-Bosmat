@@ -2,6 +2,8 @@ import pandas as pd
 import json
 import datetime
 import streamlit as st
+import hashlib
+dataf = pd.read_csv('syn_data.csv')
 CSV_PATH = "syn_data.csv"
 # ── Collect input ─────────────────────────────────────────────────────────────
 st.title("Tutor/Student Entry Form")
@@ -29,17 +31,22 @@ with st.form("entry_form"):
             "Name": st.text_input("Enter your name :"),
             "Tutor / Student": st.selectbox("what are you?", ["Tutor", "Student"]),
             "Subject": st.multiselect("Select your subjects",
+    entry = {
+        "Pass": hashlib.sha256(st.text_input("Enter your password : ").encode()).hexdigest(),
+        "ID": st.text_input("Enter ID :"),
+        "Name": st.text_input("Enter your name :"),
+        "Tutor / Student": st.selectbox("what are you?", ["Tutor", "Student"]),
+        "Subject": st.multiselect("Select your subjects",
                                       ["Math", "English", "Physics", "Biology", "Chemistry", "History",
                                        "Computer Science"]),
-            "Online / F2F": st.selectbox("Face to face or online?", ["Online", "F2F"]),
-            "Day": st.multiselect("select the days",
+        "Online / F2F": st.selectbox("Face to face or online?", ["Online", "F2F"]),
+        "Day": st.multiselect("select the days",
                                   ["sunday", "monday", "tuesday", "Wednesday", "thursday", "friday", "saturday"]),
-            "Hour": st.time_input('Select an hour', datetime.time(19, 0)).strftime("%H:%M"),  # Format time as string
-            "Phone number": st.text_input("phone number :"),
+        "Hour": st.time_input('Select an hour', datetime.time(19, 0)).strftime("%H:%M"),  # Format time as string
+        "Phone number": st.text_input("phone number :"),
         }
-        submitted = st.form_submit_button("Register")
-    with col1:
-        st.title("sign in :")
+    submitted = st.form_submit_button("Register")
+
 
 
 # ── Append to CSV  ─────────────────────────────────────────────────────────────
@@ -65,3 +72,4 @@ if submitted:
                 # Direct the routing signal straight to the 'find' (tutor matching) screen
                 st.session_state.page = 'find'
                 st.rerun()
+                find_a_match()
