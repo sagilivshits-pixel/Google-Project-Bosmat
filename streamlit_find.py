@@ -2,19 +2,10 @@ import json
 import os
 import streamlit as st
 
-# --- 1. הגדרות דף והזרקת CSS (תיקון מינימייז ותזוזה למרכז) ---
-st.set_page_config(layout="wide")
-
+# --- 1. הזרקת ה-CSS הפנימי בלבד (ללא set_page_config שיוצר שגיאה) ---
 st.markdown(
     """
     <style>
-        /* 1. אכיפת כיוון עברית על כל המסך */
-        html, body, [data-testid="stAppViewContainer"] {
-            direction: rtl;
-            text-align: right;
-        }
-
-        /* 2. סידור הסיידבר בצד ימין כשהוא פתוח */
         section[data-testid="stSidebar"] {
             left: auto !important;
             right: 0 !important;
@@ -24,44 +15,6 @@ st.markdown(
             z-index: 99999 !important;
             transition: transform 0.3s ease, width 0.3s ease, min-width 0.3s ease !important;
         }
-
-        /* 3. 🔥 התיקון הקריטי למינימייז: כשהסיידבר סגור, מאפסים לו את הרוחב 
-           ומזיזים אותו ימינה כדי שהתוכן הראשי יתמרכז על כל רוחב המסך באופן אוטומטי! */
-        section[data-testid="stSidebar"][aria-expanded="false"] {
-            width: 0px !important;
-            min-width: 0px !important;
-            max-width: 0px !important;
-            transform: translateX(300px) !important;
-        }
-
-        /* 4. פתרון למיקום כפתור הפתיחה (החץ המרחף) כשהסיידבר סגור */
-        div[data-testid="collapsedControl"] {
-            left: auto !important;
-            right: 20px !important;
-            top: 15px !important;
-            z-index: 999999 !important;
-            cursor: pointer !important;
-        }
-
-        /* סידור אזור כפתור הסגירה בתוך הסיידבר הפתוח */
-        div[data-testid="stSidebarHeader"] {
-            direction: ltr !important; 
-        }
-
-        /* הפיכת האייקונים של החצים שיצביעו לכיוונים הנכונים בעברית */
-        div[data-testid="collapsedControl"] svg,
-        div[data-testid="stSidebarHeader"] svg {
-            transform: rotate(180deg) !important;
-        }
-
-        /* 5. החלקת התנועה של התוכן הראשי בזמן פתיחה/סגירה */
-        div[data-testid="stMain"] {
-            margin-left: 0 !important;
-            margin-right: 0 !important;
-            transition: margin 0.3s ease !important;
-        }
-
-        /* סידור פנימי של הריווח בסיידבר */
         div[data-testid="stSidebarUserContent"] {
             padding-top: 1rem !important;
             direction: rtl !important;
@@ -78,11 +31,12 @@ with st.sidebar:
     st.write("שלום משתמש!")
     st.markdown("---")
 
-    # כפתור התנתקות שמחזיר לעמוד הבית
+    # 🔥 כפתור התנתקות שמחזיר לעמוד הבית הראשי של Learny דרך הסטייט של קובץ האם
     if st.button("🚪 התנתקות מהמערכת", use_container_width=True):
         st.session_state.search_done = False
         st.session_state.user_id = ""
-        st.switch_page("start_page.py")
+        st.session_state.page = 'home'
+        st.rerun()
 
 
 # --- 3. פונקציות עזר ---
@@ -110,7 +64,6 @@ def save_appointment(student_id, tutor_info):
 
 
 # --- 4. ממשק משתמש ותוכן ראשי ---
-# טעינת הנתונים
 data = load_json('student_matches_detailed.json')
 appointments = load_json('appointments.json')
 
@@ -119,26 +72,31 @@ if "search_done" not in st.session_state:
 if "user_id" not in st.session_state:
     st.session_state.user_id = ""
 
-# עמודות יחסיות ששומרות על מרכוז מושלם ומתרחבות באופן דינמי
+# שמירה על המרכוז הקיים בעזרת העמודות שלך
 spacer_right, center_col, spacer_left = st.columns([1, 2, 1])
 
 with center_col:
     st.markdown("<h1 style='text-align: center; margin-bottom: 2rem;'>מערכת התאמת מורים אישית</h1>",
                 unsafe_allow_html=True)
 
-    with st.form("search_form"):
-        raw_input = st.text_input("הקלד את מספר תעודת הזהות שלך (9 ספרות):", max_chars=9)
-        submitted = st.form_submit_button("חפש מורים")
+    if not st.session_state.search_done:
+        with st.form("search_form"):
+            raw_input = st.text_input("הקלד את מספר תעודת הזהות שלך (9 ספרות):", max_chars=9)
+            submitted = st.form_submit_button("חפש מורים")
 
-if submitted:
-    st.session_state.user_id = raw_input.strip()
-    st.session_state.search_done = True
+        if submitted:
+            st.session_state.user_id = raw_input.strip()
+            st.session_state.search_done = True
+            st.rerun()
 
 if st.session_state.search_done:
     user_id = st.session_state.user_id
     if not user_id.isdigit() or len(user_id) < 9:
         with center_col:
             st.error("נא להזין תעודת זהות תקינה (9 ספרות).")
+            if st.button("חזרה לחיפוש"):
+                st.session_state.search_done = False
+                st.rerun()
     elif user_id in data:
         user_appointments = [app for app in appointments if app.get("student_id") == user_id]
 
@@ -167,7 +125,6 @@ if st.session_state.search_done:
                 if f"{t['Name']}{t['Day']}{t['Hour']}_{t.get('Subject', ['Subject'])}" not in busy_slots
             ]
 
-        # אזור המורים להצגה במרכז הדף
         if available_tutors:
             with center_col:
                 st.subheader("מורים נוספים שזמינים עבורך:")
@@ -193,3 +150,6 @@ if st.session_state.search_done:
     else:
         with center_col:
             st.error("מספר תעודת הזהות לא נמצא במאגר.")
+            if st.button("חזרה לחיפוש"):
+                st.session_state.search_done = False
+                st.rerun()
