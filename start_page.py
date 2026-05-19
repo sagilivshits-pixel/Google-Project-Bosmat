@@ -1,9 +1,9 @@
 import streamlit as st
 
-# הגדרות דף - לבן ונקי כפי שקבעת, העברנו ל-wide כדי לתמוך בתוצאות בצורה יפה
+# הגדרות דף - שומר על ה-Layout הרקע והגדרת ה-wide המקורית שלך
 st.set_page_config(page_title="Learny", layout="wide")
 
-# 🔥 הזרקת ה-CSS של המינימייז לקובץ האם כדי שהמסך יתמרכז בצורה מושלמת כשהסיידבר נסגר
+# הזרקת ה-CSS של המינימייז כדי שהמסך יתמרכז בצורה מושלמת כשהסיידבר נסגר
 st.markdown(
     """
     <style>
@@ -44,8 +44,10 @@ st.markdown(
 # ניהול מצב הדפים (הסיגנל)
 if 'page' not in st.session_state:
     st.session_state.page = 'home'
+if 'user_id' not in st.session_state:
+    st.session_state.user_id = ''
 
-# --- דף הבית ---
+# --- דף הבית המקורי שלך ---
 if st.session_state.page == 'home':
     st.markdown("<h1 style='text-align: center;'>Learny</h1>", unsafe_allow_html=True)
     st.write("##")
@@ -53,8 +55,9 @@ if st.session_state.page == 'home':
     col1, col2 = st.columns(2)
 
     with col1:
+        # לחיצה על כפתור ה-Sign In מחברת ומפנה לקובץ sign_up.py
         if st.button("Sign In", use_container_width=True):
-            st.session_state.page = 'find'
+            st.session_state.page = 'login'
             st.rerun()
 
     with col2:
@@ -62,10 +65,20 @@ if st.session_state.page == 'home':
             st.session_state.page = 'input'
             st.rerun()
 
-# --- הרצת הקבצים האחרים (בלי לשנות אותם) ---
+# --- ניתוב והרצת הקבצים השונים באמצעות exec ---
+
+elif st.session_state.page == 'login':
+    if st.button("⬅ Back to Menu"):
+        st.session_state.page = 'home'
+        st.rerun()
+
+    # מריץ את קובץ הטופס sign_up.py
+    with open("sign_up.py", encoding="utf-8") as f:
+        code = f.read()
+        exec(code)
 
 elif st.session_state.page == 'find':
-    # מריץ את הקובץ streamlit_find.py כפי שהוא
+    # מריץ את קובץ החיפוש streamlit_find.py
     with open("streamlit_find.py", encoding="utf-8") as f:
         code = f.read()
         exec(code)
@@ -75,7 +88,7 @@ elif st.session_state.page == 'input':
         st.session_state.page = 'home'
         st.rerun()
 
-    # מריץ את הקובץ Get_user_input.py כפי שהוא
+    # מריץ את קובץ הרישום Get_user_input.py
     with open("Get_user_input.py", encoding="utf-8") as f:
         code = f.read()
         exec(code)
