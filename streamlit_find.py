@@ -31,7 +31,7 @@ with st.sidebar:
     st.write("שלום משתמש!")
     st.markdown("---")
 
-    # 🔥 כפתור התנתקות שמחזיר לעמוד הבית הראשי של Learny דרך הסטייט של קובץ האם
+    # כפתור התנתקות שמחזיר לעמוד הבית הראשי דרך הסטייט של קובץ האם
     if st.button("🚪 התנתקות מהמערכת", use_container_width=True):
         st.session_state.search_done = False
         st.session_state.user_id = ""
@@ -63,7 +63,7 @@ def save_appointment(student_id, tutor_info):
         json.dump(appointments, f, indent=4, ensure_ascii=False)
 
 
-# --- 4. ממשק משתמש ותוכן ראשי ---
+# --- 4. טעינת נתונים ראשונית ---
 data = load_json('student_matches_detailed.json')
 appointments = load_json('appointments.json')
 
@@ -72,9 +72,10 @@ if "search_done" not in st.session_state:
 if "user_id" not in st.session_state:
     st.session_state.user_id = ""
 
-# שמירה על המרכוז הקיים בעזרת העמודות שלך
+# שמירה על המרכוז הקיים בעזרת עמודות פריסה
 spacer_right, center_col, spacer_left = st.columns([1, 2, 1])
 
+# --- 5. ממשק משתמש ותוכן ראשי ---
 with center_col:
     st.markdown("<h1 style='text-align: center; margin-bottom: 2rem;'>מערכת התאמת מורים אישית</h1>",
                 unsafe_allow_html=True)
@@ -91,20 +92,22 @@ with center_col:
 
 if st.session_state.search_done:
     user_id = st.session_state.user_id
+
     if not user_id.isdigit() or len(user_id) < 9:
         with center_col:
             st.error("נא להזין תעודת זהות תקינה (9 ספרות).")
             if st.button("חזרה לחיפוש"):
                 st.session_state.search_done = False
                 st.rerun()
+
     elif user_id in data:
         user_appointments = [app for app in appointments if app.get("student_id") == user_id]
 
         with center_col:
             if user_appointments:
-                st.warning("כבר קבעת פגישה במערכת:")
+                st.warning("הפגישות שנקבעו לך:")
                 for app in user_appointments:
-                    phone = app.get('phone', ['Phone'])
+                    phone = app.get('phone', app.get('Phone', ['Phone']))
                     st.info(
                         f" *תלמיד:* {app['student_id']}  \n"
                         f" *מורה:* {app['tutor_name']}  \n"
@@ -112,11 +115,11 @@ if st.session_state.search_done:
                         f" *יום:* {app['day']}, *שעה:* {app['hour']}  \n"
                         f" *טלפון:* {phone}"
                     )
-                st.divider()
+                st.divider()  # קו הפרדה ויזואלי בין פגישות קיימות למורים פנויים
 
             all_tutors = data[user_id]
             busy_slots = [
-                f"{a['tutor_name']}{a['day']}{a['hour']}_{a['subject']}"
+                f"{a['tutor_name']}{a['day']}{a['hour']}_{a.get('subject', ['Subject'])}"
                 for a in appointments
             ]
 
@@ -125,24 +128,25 @@ if st.session_state.search_done:
                 if f"{t['Name']}{t['Day']}{t['Hour']}_{t.get('Subject', ['Subject'])}" not in busy_slots
             ]
 
+        # טיפול בהצגת המורים הזמינים (מחוץ ל-with center_col כדי למנוע בעיות ריקוד עמודות פנימיות בסטרימליט)
         if available_tutors:
             with center_col:
                 st.subheader("מורים נוספים שזמינים עבורך:")
                 cols = st.columns(min(len(available_tutors), 3))
 
-                for index, tutor_info in enumerate(available_tutors):
-                    with cols[index % 3]:
-                        st.info(f"*{tutor_info['Name']}*\n")
-                        st.write(f" מקצוע: {tutor_info.get('Subject', ['Subject'])}\n")
-                        st.write(f" יום: {tutor_info['Day']}\n")
-                        st.write(f" שעה: {tutor_info['Hour']}\n")
-                        st.write(f" טלפון: {tutor_info['Phone']}")
+            for index, tutor_info in enumerate(available_tutors):
+                with cols[index % 3]:
+                    st.info(f"*{tutor_info['Name']}*\n")
+                    st.write(f" מקצוע: {tutor_info.get('Subject', ['Subject'])}\n")
+                    st.write(f" יום: {tutor_info['Day']}\n")
+                    st.write(f" שעה: {tutor_info['Hour']}\n")
+                    st.write(f" טלפון: {tutor_info['Phone']}")
 
-                        if st.button(f"קביעת פגישה", key=f"btn_{index}"):
-                            save_appointment(user_id, tutor_info)
-                            st.toast(f"נקבעה פגישה עם {tutor_info['Name']}!")
-                            st.balloons()
-                            st.rerun()
+                    if st.button(f"קביעת פגישה", key=f"btn_{index}"):
+                        save_appointment(user_id, tutor_info)
+                        st.toast(f"נקבעה פגישה עם {tutor_info['Name']}!")
+                        st.balloons()
+                        st.rerun()
 
         elif not user_appointments:
             with center_col:

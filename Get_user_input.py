@@ -48,3 +48,4 @@ if submitted:
                 # Direct the routing signal straight to the 'find' (tutor matching) screen
                 st.session_state.page = 'find'
                 st.rerun()
+                find_a_match()
