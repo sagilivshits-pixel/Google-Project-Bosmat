@@ -5,10 +5,32 @@ import streamlit as st
 import hashlib
 dataf = pd.read_csv('syn_data.csv')
 CSV_PATH = "syn_data.csv"
-M_rows = dataf.shape[0]
 # ── Collect input ─────────────────────────────────────────────────────────────
 st.title("Tutor/Student Entry Form")
+with st.form("ID form"):
+    ID_entry = {
+        "ID": st.text_input("enter id :")
+    }
+    ID_BUTTON = st.form_submit_button("Submit ID ")
+if ID_BUTTON:
+    if not ID_entry["ID"]:
+        st.error("Please write an id")
+    else:
+        try:
+            df_existing = pd.read_csv(CSV_PATH, dtype={"ID": str})
+
+            if ID_entry["ID"] in df_existing["ID"].values:
+                st.error("User exists, please go to sign-in")
+        except FileNotFoundError:
+            # If the file doesn't exist yet, there are no existing users to check
+            pass
 with st.form("entry_form"):
+    col1, col2 = st.columns(2)
+    with col1:
+        entry = {
+            "Name": st.text_input("Enter your name :"),
+            "Tutor / Student": st.selectbox("what are you?", ["Tutor", "Student"]),
+            "Subject": st.multiselect("Select your subjects",
     entry = {
         "Pass": hashlib.sha256(st.text_input("Enter your password : ").encode()).hexdigest(),
         "ID": st.text_input("Enter ID :"),
@@ -26,14 +48,16 @@ with st.form("entry_form"):
     submitted = st.form_submit_button("Register")
 
 
+
+# ── Append to CSV  ─────────────────────────────────────────────────────────────
 if submitted:
-            if not entry["Subject"] or not entry["Day"]:
+        if not entry["Subject"] or not entry["Day"]:
                 st.error("Please select at least one Subject and one Day.")
-            else:
+        else:
                 # Create DataFrame and explode the lists into separate rows
                 new_entry_df = pd.DataFrame([entry])
+                new_entry_df["ID"] = ID_entry["ID"]
                 new_entry_df = new_entry_df.explode('Subject').explode('Day')
-
                 try:
                     df_existing = pd.read_csv(CSV_PATH, dtype={"ID": str, "Phone number": str})
                     df = pd.concat([df_existing, new_entry_df], ignore_index=True)
