@@ -1,6 +1,7 @@
 import json
 import os
 import streamlit as st
+from main import find_a_match
 
 # --- 1. הזרקת ה-CSS הפנימי בלבד (ללא set_page_config שיוצר שגיאה) ---
 st.markdown(
@@ -101,6 +102,13 @@ if st.session_state.search_done:
                 st.rerun()
 
     elif user_id in data:
+        # 🔥 כאן בדיוק ה-ID עבר את הבדיקה בהצלחה!
+        # נריץ את פונקציית find_a_match המקורית שלך ממוקדת על ה-ID הזה
+        find_a_match(user_id)
+
+        # טעינה מחדש של הנתונים המעודכנים לאחר ריצת הפונקציה
+        data = load_json('student_matches_detailed.json')
+
         user_appointments = [app for app in appointments if app.get("student_id") == user_id]
 
         with center_col:

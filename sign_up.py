@@ -37,9 +37,14 @@ if login_submitted:
 
             # 3. בדיקה האם הסיסמאות תואמות
             if hashed_input == saved_password:
-                st.session_state.user_id = search_id
-                st.session_state.page = 'find'
-                st.rerun()
+                if df.iloc[my_position,2] == "Student":
+                    st.session_state.user_id = search_id
+                    st.session_state.page = 'find'
+                    st.rerun()
+                else:
+                    st.session_state.user_id = search_id
+                    st.session_state.page = 'Tutor_page'
+                    st.rerun()
             else:
                 st.error("הסיסמה שהוזנה אינה נכונה")
         else:

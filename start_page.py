@@ -92,3 +92,10 @@ elif st.session_state.page == 'input':
     with open("Get_user_input.py", encoding="utf-8") as f:
         code = f.read()
         exec(code)
+
+# ─── הניווט החדש שהוספנו עבור המורים ───────────────────
+elif st.session_state.page == 'Tutor_page':
+    # מריץ את קובץ לוח הבקרה של המורים
+    with open("Tutor_page.py", encoding="utf-8") as f:
+        code = f.read()
+        exec(code)
