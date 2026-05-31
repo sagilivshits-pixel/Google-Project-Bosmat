@@ -237,8 +237,8 @@ ID,Name,Tutor / Student,Subject,Online / F2F,Day,Hour,Phone number,Pass
 010101677,John Shepard,Student,Math,Online,monday,19:00,0529992039,0232a25f12fa24095528c0dc26ed5af51c5e08b38f8094ce89cffa1b9576c62a
 010101677,John Shepard,Student,Math,Online,tuesday,19:00,0529992039,0232a25f12fa24095528c0dc26ed5af51c5e08b38f8094ce89cffa1b9576c62a
 010101677,John Shepard,Student,Math,Online,Wednesday,19:00,0529992039,0232a25f12fa24095528c0dc26ed5af51c5e08b38f8094ce89cffa1b9576c62a
-<<<<<<< Updated upstream
-=======
+<<<<<<< Updated upstream,,,,,,,,
+=======,,,,,,,,
 038392800,Mojtaba Khamenei,Student,Math,Online,sunday,19:00,0587882039,2cb784467e38c35a1800683733eb94e5ca39eba7fdeed7300655f18a0497f22e
 898120111,Albert Einstein,Tutor,Physics,Online,sunday,09:00,1635551584,bf1a862eab92b0ce828d8db8a865b0c013d2c5e47d520d9d1173052fcd86cf46
 898120111,Albert Einstein,Tutor,Physics,Online,tuesday,09:00,1635551584,bf1a862eab92b0ce828d8db8a865b0c013d2c5e47d520d9d1173052fcd86cf46
@@ -274,4 +274,6 @@ yahal cohen,Yahal,Tutor,Math,F2F,tuesday,19:45,silas_CRP,9b17c8e2a5ee094d2dd54f2
 23,Yahalz,Student,English,F2F,monday,18:15,050279995,9b17c8e2a5ee094d2dd54f233ca6ffc952a24822f4df1e05dc5c38022d15c1b4
 23,Yahalz,Student,Biology,F2F,sunday,18:45,050279995,9b17c8e2a5ee094d2dd54f233ca6ffc952a24822f4df1e05dc5c38022d15c1b4
 23,Yahalz,Student,Biology,F2F,monday,18:15,050279995,9b17c8e2a5ee094d2dd54f233ca6ffc952a24822f4df1e05dc5c38022d15c1b4
->>>>>>> Stashed changes
+>>>>>>> Stashed changes,,,,,,,,
+9008980878,937882006,Student,Chemistry,Online,Tuesday,22:15,0527880101,e0f3ab9fd4130c9f9a7fd1320d842bfcf83b7a0bf962fdeba9e4497f8b54d52a
+9008980878,937882006,Student,Chemistry,Online,Wednesday,19:00,0527880101,e0f3ab9fd4130c9f9a7fd1320d842bfcf83b7a0bf962fdeba9e4497f8b54d52a

@@ -57,7 +57,7 @@ else:
 
         # המולטיסלקט המקורי שלך
         selected_days = st.multiselect("select the days",
-                                       ["sunday", "monday", "tuesday", "Wednesday", "thursday", "friday", "saturday"])
+                                       ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"])
 
         # מילוי שעות דינמי שמופיע מיד על המסך רק עבור הימים שנבחרו
         hours_list = []
