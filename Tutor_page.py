@@ -3,27 +3,36 @@ import pandas as pd
 import json
 import os
 
-# --- 1. עיצוב (RTL ומרכז) ---
 st.markdown(
     """
     <style>
-        section[data-testid="stSidebar"] { left: auto !important; right: 0 !important; width: 300px !important; }
-        div[data-testid="stSidebarUserContent"] { padding-top: 1rem !important; direction: rtl !important; text-align: right !important; }
-        .stAlert { direction: rtl; text-align: right; }
+        /* יישור התוכן לימין */
+        div[data-testid="stSidebarUserContent"] {
+            direction: rtl !important;
+            text-align: right !important;
+            padding-top: 1.5rem !important;
+        }
+
+        /* וידוא שהסיידבר נשאר מחובר לקיר הימני */
+        section[data-testid="stSidebar"] {
+            right: 0 !important;
+            left: auto !important;
+        }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# --- 2. תפריט צד ---
 with st.sidebar:
-    st.title("תפריט מורה")
+    st.title("תפריט מערכת")
     if st.button("🚪 התנתקות מהמערכת", use_container_width=True):
+        st.session_state.search_done = False
         st.session_state.user_id = ""
         st.session_state.page = 'home'
         st.rerun()
 
 
+# כאן ממשיך שאר הקוד המקורי שלך (לוגיקת הפגישות או החיפוש)
 # --- 3. פונקציות טעינה ---
 def load_json(filename):
     if os.path.exists(filename):

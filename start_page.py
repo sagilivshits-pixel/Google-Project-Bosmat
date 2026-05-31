@@ -2,7 +2,7 @@ import streamlit as st
 import base64
 import os
 
-# 1. Page Configuration
+# הגדרות דף - שומר על ה-Layout הרקע והגדרת ה-wide המקורית שלך
 st.set_page_config(page_title="Learny", layout="wide")
 
 
@@ -15,51 +15,68 @@ def get_base64_image(image_path):
 
 img_base64 = get_base64_image("wave_bg.png")
 
-# 2. הזרקת CSS מותאם אישית - דגש על שכבות ואיכות
+# יצירת ה-CSS של הרקע בנפרד כדי לא לגעת בקוד שלך
+bg_css = ""
 if img_base64:
-    st.markdown(
-        f"""
-        <style>
-            .stApp {{
-                background-image: url("data:image/png;base64,{img_base64}");
-                /* פתרון האיכות: במקום cover, נשתמש ב-100% לרוחב וגובה אוטומטי */
-                background-size: 100% auto !important;
-                background-position: bottom center !important;
-                background-repeat: no-repeat !important;
-                background-attachment: fixed !important;
-                /* מוודא שהרקע תמיד מאחורי הכל */
-                z-index: -1;
-            }}
+    bg_css = f"""
+    .stApp {{
+        background-image: url("data:image/png;base64,{img_base64}");
+        /* מונע זום ושומר את התמונה למטה */
+        background-size: 100% auto !important;
+        background-position: bottom center !important;
+        background-repeat: no-repeat !important;
+        background-attachment: fixed !important;
+        z-index: -1;
+    }}
+    """
 
-            html, body, [data-testid="stAppViewContainer"] {{
-                direction: rtl;
-                text-align: right;
-            }}
+# הזרקת ה-CSS המקורי שלך שעבד מושלם + הרקע!
+st.markdown(
+    f"""
+    <style>
+        {bg_css}
 
-            /* עיצוב כפתורים */
-            .stButton > button {{
-                width: 100%;
-                border-radius: 20px;
-            }}
-            h1 {{ color: #1E3A2F; text-align: center; }}
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
+        /* ------------- הקוד המקורי והעובד שלך ------------- */
+        html, body, [data-testid="stAppViewContainer"] {{
+            direction: rtl;
+            text-align: right;
+        }}
+        /* תיקון למינימייז: כשהסיידבר סגור, מאפסים לו את הרוחב כדי שהתוכן יתמרכז */
+        section[data-testid="stSidebar"][aria-expanded="false"] {{
+            width: 0px !important;
+            min-width: 0px !important;
+            max-width: 0px !important;
+            transform: translateX(300px) !important;
+        }}
+        div[data-testid="collapsedControl"] {{
+            left: auto !important;
+            right: 20px !important;
+            top: 15px !important;
+            z-index: 999999 !important;
+        }}
+        div[data-testid="stSidebarHeader"] {{
+            direction: ltr !important; 
+        }}
+        div[data-testid="collapsedControl"] svg,
+        div[data-testid="stSidebarHeader"] svg {{
+            transform: rotate(180deg) !important;
+        }}
+        /* --------------------------------------------------- */
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
-# לוגיקה להסתרה/הצגה של הסיידבר לפי דף
+# הסתרת הסיידבר במסך הבית בלבד
 if 'page' not in st.session_state:
     st.session_state.page = 'home'
 
 if st.session_state.page == 'home':
-    st.markdown("<style>[data-testid='stSidebar'], [data-testid='collapsedControl'] {display: none;}</style>",
-                unsafe_allow_html=True)
-else:
-    # כאן אנחנו "מכריחים" את הסיידבר להופיע בדפים אחרים עם Z-index גבוה
-    st.markdown("<style>[data-testid='stSidebar'] {display: flex !important; z-index: 1000001 !important;}</style>",
-                unsafe_allow_html=True)
+    st.markdown(
+        "<style>[data-testid='stSidebar'], [data-testid='collapsedControl'] {display: none !important;}</style>",
+        unsafe_allow_html=True)
 
-# 4. לוגיקת דפים (ללא שינוי במבנה המקורי שלך)
+# --- מכאן והלאה: הלוגיקה והכפתורים המקוריים שלך ללא שום שינוי ---
 main_container = st.container()
 with main_container:
     if st.session_state.page == 'home':

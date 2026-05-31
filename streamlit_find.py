@@ -4,18 +4,26 @@ import streamlit as st
 import pandas as pd
 from main import find_a_match
 
-# --- CSS עיצוב ---
 st.markdown(
     """
     <style>
-        section[data-testid="stSidebar"] { left: auto !important; right: 0 !important; width: 300px !important; }
-        div[data-testid="stSidebarUserContent"] { padding-top: 1rem !important; direction: rtl !important; text-align: right !important; }
+        /* יישור התוכן לימין */
+        div[data-testid="stSidebarUserContent"] {
+            direction: rtl !important;
+            text-align: right !important;
+            padding-top: 1.5rem !important;
+        }
+
+        /* וידוא שהסיידבר נשאר מחובר לקיר הימני */
+        section[data-testid="stSidebar"] {
+            right: 0 !important;
+            left: auto !important;
+        }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# --- תפריט צד ---
 with st.sidebar:
     st.title("תפריט מערכת")
     if st.button("🚪 התנתקות מהמערכת", use_container_width=True):
@@ -23,6 +31,9 @@ with st.sidebar:
         st.session_state.user_id = ""
         st.session_state.page = 'home'
         st.rerun()
+
+
+# כאן ממשיך שאר הקוד המקורי שלך (לוגיקת הפגישות או החיפוש)
 
 
 # --- פונקציות עזר ---
