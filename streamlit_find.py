@@ -7,23 +7,43 @@ from main import find_a_match
 st.markdown(
     """
     <style>
-        /* יישור התוכן לימין */
+        /* יישור הסיידבר לימין */
         div[data-testid="stSidebarUserContent"] {
             direction: rtl !important;
             text-align: right !important;
             padding-top: 1.5rem !important;
         }
-
-        /* וידוא שהסיידבר נשאר מחובר לקיר הימני */
         section[data-testid="stSidebar"] {
             right: 0 !important;
             left: auto !important;
+        }
+
+        /* הסטייל של הקופסה הלבנה (מתוך Get_user_input) */
+        /* משפיע על העמודה המרכזית (child 2) */
+        div[data-testid*="olumn"]:nth-child(2) > div {
+            background-color: #FFFFFF !important;
+            opacity: 1 !important;
+            padding: 2.5rem !important;
+            border-radius: 16px !important;
+            box-shadow: 0px 12px 35px rgba(0,0,0,0.1) !important;
+            border: 1px solid #EAEAEA !important;
+        }
+
+        /* ניקוי רקעים כפולים */
+        div[data-testid="stVerticalBlockBorderWrapper"] {
+            background-color: transparent !important;
+        }
+
+        /* התאמת כותרות בתוך הקופסה הלבנה */
+        h1, h3 {
+            color: #1f1f1f !important;
         }
     </style>
     """,
     unsafe_allow_html=True
 )
 
+# --- 2. תפריט צד ---
 with st.sidebar:
     st.title("תפריט מערכת")
     if st.button("🚪 התנתקות מהמערכת", use_container_width=True):

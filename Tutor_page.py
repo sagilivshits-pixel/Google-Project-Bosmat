@@ -3,26 +3,47 @@ import pandas as pd
 import json
 import os
 
+# --- 1. הזרקת CSS (שילוב של הסיידבר והקופסה הלבנה מההרשמה) ---
 st.markdown(
     """
     <style>
-        /* יישור התוכן לימין */
+        /* יישור הסיידבר לימין */
         div[data-testid="stSidebarUserContent"] {
             direction: rtl !important;
             text-align: right !important;
             padding-top: 1.5rem !important;
         }
-
-        /* וידוא שהסיידבר נשאר מחובר לקיר הימני */
         section[data-testid="stSidebar"] {
             right: 0 !important;
             left: auto !important;
+        }
+
+        /* הסטייל של הקופסה הלבנה (מתוך Get_user_input) */
+        /* משפיע על העמודה המרכזית (child 2) */
+        div[data-testid*="olumn"]:nth-child(2) > div {
+            background-color: #FFFFFF !important;
+            opacity: 1 !important;
+            padding: 2.5rem !important;
+            border-radius: 16px !important;
+            box-shadow: 0px 12px 35px rgba(0,0,0,0.1) !important;
+            border: 1px solid #EAEAEA !important;
+        }
+
+        /* ניקוי רקעים כפולים */
+        div[data-testid="stVerticalBlockBorderWrapper"] {
+            background-color: transparent !important;
+        }
+
+        /* התאמת כותרות בתוך הקופסה הלבנה */
+        h1, h3 {
+            color: #1f1f1f !important;
         }
     </style>
     """,
     unsafe_allow_html=True
 )
 
+# --- 2. תפריט צד ---
 with st.sidebar:
     st.title("תפריט מערכת")
     if st.button("🚪 התנתקות מהמערכת", use_container_width=True):
@@ -32,7 +53,6 @@ with st.sidebar:
         st.rerun()
 
 
-# כאן ממשיך שאר הקוד המקורי שלך (לוגיקת הפגישות או החיפוש)
 # --- 3. פונקציות טעינה ---
 def load_json(filename):
     if os.path.exists(filename):
@@ -41,9 +61,9 @@ def load_json(filename):
     return []
 
 
-# --- 4. לוגיקה מרכזית עם עמודות למרכוז ---
-# יצירת עמודות: צדדיות ריקות (1) ואמצעית רחבה (2)
-spacer_right, center_col, spacer_left = st.columns([1, 2, 1])
+# --- 4. לוגיקה מרכזית (ממורכזת בתוך הקופסה הלבנה) ---
+# שימוש ביחס עמודות דומה להרשמה כדי שה-CSS יתפוס נכון
+spacer_right, center_col, spacer_left = st.columns([1, 3, 1])
 
 with center_col:
     st.markdown("<h1 style='text-align: center;'>לוח הפגישות שלי</h1>", unsafe_allow_html=True)
@@ -53,6 +73,7 @@ with center_col:
     if not tutor_id:
         st.error("לא נמצא מזהה מורה. אנא התחבר מחדש.")
     else:
+        # טעינת נתונים
         df = pd.read_csv('syn_data.csv')
         appointments = load_json('appointments.json')
 
@@ -63,8 +84,9 @@ with center_col:
         else:
             tutor_name = tutor_row['Name'].iloc[0]
             st.markdown(f"<h3 style='text-align: center;'>שלום, {tutor_name}</h3>", unsafe_allow_html=True)
-            st.write("")  # מרווח
+            st.divider()
 
+            # סינון פגישות למורה הנוכחי
             my_appointments = [
                 app for app in appointments
                 if str(app.get('tutor_name', '')).strip().lower() == str(tutor_name).strip().lower()
@@ -73,6 +95,7 @@ with center_col:
             if not my_appointments:
                 st.info("אין לך פגישות קרובות במערכת כרגע.")
             else:
+                # הצגת כל פגישה בקופסה ירוקה בתוך המתחם הלבן
                 for app in my_appointments:
                     student_id = str(app.get('student_id', '')).strip()
                     student_rows = df[df['ID'].astype(str).str.strip() == student_id]
@@ -84,12 +107,9 @@ with center_col:
                         student_name = app.get('student_name', "תלמיד")
                         student_phone = app.get('phone', 'לא זמין')
 
-                    # הצגה בתוך קופסה מעוצבת
-                    with st.container():
-                        st.success(
-                            f"📅 **יום:** {app.get('day')}  |  ⏰ **שעה:** {app.get('hour')} \n\n"
-                            f"👤 **שם התלמיד:** {student_name}  \n"
-                            f"📱 **טלפון:** {student_phone}  \n"
-                            f"📚 **מקצוע:** {app.get('subject', 'כללי')}"
-                        )
-                        st.markdown("---")
+                    st.success(
+                        f"📅 **יום:** {app.get('day')}  |  ⏰ **שעה:** {app.get('hour')} \n\n"
+                        f"👤 **שם התלמיד:** {student_name}  \n"
+                        f"📱 **טלפון:** {student_phone}  \n"
+                        f"📚 **מקצוע:** {app.get('subject', 'כללי')}"
+                    )
