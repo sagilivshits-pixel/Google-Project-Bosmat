@@ -9,23 +9,14 @@ def streamlit_find(user_id):
     st.markdown(
         """
         <style>
-            /* יישור התוכן לימין */
-            div[data-testid="stSidebarUserContent"] {
-                direction: rtl !important;
-                text-align: right !important;
-                padding-top: 1.5rem !important;
-            }
-
-            /* וידוא שהסיידבר נשאר מחובר לקיר הימני */
-            section[data-testid="stSidebar"] {
-                right: 0 !important;
-                left: auto !important;
-            }
+            section[data-testid="stSidebar"] { left: auto !important; right: 0 !important; width: 300px !important; }
+            div[data-testid="stSidebarUserContent"] { padding-top: 1rem !important; direction: rtl !important; text-align: right !important; }
         </style>
         """,
         unsafe_allow_html=True
     )
 
+    # --- תפריט צד ---
     with st.sidebar:
         st.title("תפריט מערכת")
         if st.button("🚪 התנתקות מהמערכת", use_container_width=True):
