@@ -3,7 +3,6 @@ import base64
 import os
 from Get_user_input import *
 from streamlit_find import *
-
 # הגדרות עמוד כלליות
 st.set_page_config(page_title="Learny", layout="wide")
 
@@ -90,9 +89,11 @@ with main_container:
             st.session_state.page = 'home'
             st.rerun()
 
-        # מריצים את הקובץ בדיוק כמו שעשינו במסך ההתחברות
-        with open("streamlit_find.py", encoding="utf-8") as f:
-            exec(f.read())
+        # ייבוא הפונקציה מהקובץ השני
+        from streamlit_find import streamlit_find
+
+        # הפעלת הפונקציה והעברת ה-ID של המשתמש המחובר
+        streamlit_find(st.session_state.user_id)
 
     # --- מסך אזור אישי למורים ---
     elif st.session_state.page == 'Tutor_page':
