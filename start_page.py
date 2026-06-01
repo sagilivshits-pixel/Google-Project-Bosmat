@@ -43,58 +43,79 @@ st.markdown(
             direction: rtl;
             text-align: right;
         }}
-        h1, h2, h3, p, label, .stMarkdown {{
-            color: #262730 !important;
-            direction: rtl;
-            text-align: right;
+        /* תיקון למינימייז: כשהסיידבר סגור, מאפסים לו את הרוחב כדי שהתוכן יתמרכז */
+        section[data-testid="stSidebar"][aria-expanded="false"] {{
+            width: 0px !important;
+            min-width: 0px !important;
+            max-width: 0px !important;
+            transform: translateX(300px) !important;
         }}
-        div[data-testid="stForm"] {{
-            direction: rtl;
-            text-align: right;
+        div[data-testid="collapsedControl"] {{
+            left: auto !important;
+            right: 20px !important;
+            top: 15px !important;
+            z-index: 999999 !important;
         }}
+        div[data-testid="stSidebarHeader"] {{
+            direction: ltr !important; 
+        }}
+        div[data-testid="collapsedControl"] svg,
+        div[data-testid="stSidebarHeader"] svg {{
+            transform: rotate(180deg) !important;
+        }}
+        /* --------------------------------------------------- */
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# אתחול ה-session_state במידה ולא קיים
+# אתחול ה-page במידה ולא קיים
 if 'page' not in st.session_state:
     st.session_state.page = 'home'
-if 'user_id' not in st.session_state:
-    st.session_state.user_id = ""
 
-# מיכל ראשי לעיטוף האפליקציה
+# הלוגיקה והכפתורים המעודכנים למרכוז מושלם
 main_container = st.container()
 with main_container:
-    # --- מסך הבית הראשי ---
     if st.session_state.page == 'home':
-        st.write("##")
-        st.write("##")
+
+        # הסתרת הסיידבר + הוספת גובה מותאם אישית אך ורק למסך הבית (כדי לא להשפיע על שאר העמודים)
+        st.markdown("""
+        <style>
+            [data-testid='stSidebar'], [data-testid='collapsedControl'] {
+                display: none !important;
+            }
+            .block-container {
+                padding-top: 14vh !important;
+            }
+        </style>
+        """, unsafe_allow_html=True)
+
+        # מבנה ה-50/50 המקורי שלך שמציג את הקולאז' בשמאל בצורה מושלמת
         col_right, col_left = st.columns([1, 1], gap="large")
+
         with col_right:
-            st.markdown("<h1>ברוכים הבאים ל-Learny</h1>", unsafe_allow_html=True)
-            st.write("##")
-            # תרגום כפתור ההתחברות לעברית
-            if st.button("התחברות", use_container_width=True):
-                st.session_state.page = 'login'
-                st.rerun()
-            st.write("###")
-            # תרגום כפתור ההרשמה לעברית
-            if st.button("הרשמה למערכת", use_container_width=True):
-                st.session_state.page = 'input'
-                st.rerun()
+            # מרכוז אופקי פנימי: חלוקת הצד הימני ל-3 תת-עמודות [מרווח, תוכן, מרווח]
+            sub_spacer_right, sub_content, sub_spacer_left = st.columns([1, 3, 1])
+
+            with sub_content:
+                st.markdown(
+                    "<h1 style='text-align: center; color: #1E3A2F; margin-bottom: 25px;'>ברוכים הבאים ל-Learny</h1>",
+                    unsafe_allow_html=True)
+
+                if st.button("Sign In", use_container_width=True):
+                    st.session_state.page = 'login'
+                    st.rerun()
+
+                st.write("###")  # מרווח אסתטי בין הכפתורים
+
+                if st.button("Register", use_container_width=True):
+                    st.session_state.page = 'input'
+                    st.rerun()
+
         with col_left:
             if os.path.exists("Untitled design.png"):
                 st.image("Untitled design.png", use_container_width=True)
 
-    # --- מסך הרשמה ---
-    elif st.session_state.page == 'input':
-        if st.button("⬅ חזרה לתפריט"):
-            st.session_state.page = 'home'
-            st.rerun()
-        get_user_input()
-
-    # --- מסך התחברות ---
     elif st.session_state.page == 'login':
         if st.button("⬅ חזרה לתפריט"):
             st.session_state.page = 'home'
@@ -102,23 +123,17 @@ with main_container:
         with open("sign_up.py", encoding="utf-8") as f:
             exec(f.read())
 
-    # --- מסך חיפוש לתלמידים ---
-    elif st.session_state.page == 'find':
-        if st.session_state.user_id:
-            streamlit_find(st.session_state.user_id)
-        else:
-            st.error("שגיאה: לא נמצא מזהה משתמש. אנא התחבר מחדש.")
-            if st.button("חזרה למסך הבית"):
-                st.session_state.page = 'home'
-                st.rerun()
+    elif st.session_state.page == 'input':
+        if st.button("⬅ חזרה לתפריט"):
+            st.session_state.page = 'home'
+            st.rerun()
+        with open("Get_user_input.py", encoding="utf-8") as f:
+            get_user_input()
 
-    # --- מסך אזור אישי למורים ---
+    elif st.session_state.page == 'find':
+        with open("streamlit_find.py", encoding="utf-8") as f:
+            exec(f.read())
+
     elif st.session_state.page == 'Tutor_page':
-        if st.session_state.user_id:
-            with open("Tutor_page.py", encoding="utf-8") as f:
-                exec(f.read())
-        else:
-            st.error("שגיאה: לא נמצא מזהה משתמש. אנא התחבר מחדש.")
-            if st.button("חזרה למסך הבית"):
-                st.session_state.page = 'home'
-                st.rerun()
+        with open("Tutor_page.py", encoding="utf-8") as f:
+            exec(f.read())
