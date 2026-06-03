@@ -8,10 +8,40 @@ import os
 def get_user_input():
     CSV_PATH = "syn_data.csv"
 
+    # ── מילוני תרגום (Mapping): תצוגה בעברית -> שמירה באנגלית ב-CSV ──
+    role_map = {
+        "תלמיד": "Student",
+        "מורה": "Tutor"
+    }
+
+    subject_map = {
+        "מתמטיקה": "Math",
+        "אנגלית": "English",
+        "פיזיקה": "Physics",
+        "ביולוגיה": "Biology",
+        "כימיה": "Chemistry",
+        "היסטוריה": "History",
+        "מדעי המחשב": "Computer Science"
+    }
+
+    modality_map = {
+        "מקוון (אונליין)": "Online",
+        "פרונטלי (פנים אל פנים)": "F2F"
+    }
+
+    day_map = {
+        "יום ראשון": "Sunday",
+        "יום שני": "Monday",
+        "יום שלישי": "Tuesday",
+        "יום רביעי": "Wednesday",
+        "יום חמישי": "Thursday",
+        "יום שישי": "Friday",
+        "יום שבת": "Saturday"
+    }
+
     # ── הזרקת CSS חסין עדכונים לביטול השקיפות, יצירת קופסה והגדלת פונט ──────────────────
     st.markdown("""
             <style>
-            /* משתמש בטריק הכוכבית שעבד, אבל מגביל אותו *אך ורק* לעמודה השנייה (האמצעית) */
             div[data-testid*="olumn"]:nth-child(2) > div {
                 background-color: #FFFFFF !important;
                 background: #FFFFFF !important;
@@ -22,7 +52,6 @@ def get_user_input():
                 border: 1px solid #EAEAEA !important;
             }
 
-            /* מונע כפל גבולות ורקעים מהקונטיינרים הפנימיים של Streamlit */
             div[data-testid="stVerticalBlockBorderWrapper"], 
             div[data-testid="stForm"] {
                 background-color: transparent !important;
@@ -31,19 +60,17 @@ def get_user_input():
                 padding: 0 !important;
             }
 
-            /* שומר על צבע טקסט כהה ומגדיל את הפונט של תיבות הקלט, התוויות והטקסט הרגיל */
             div[data-testid*="olumn"]:nth-child(2) input, 
             div[data-testid*="olumn"]:nth-child(2) label,
             div[data-testid*="olumn"]:nth-child(2) p,
             div[data-testid*="olumn"]:nth-child(2) span,
             div[data-testid*="olumn"]:nth-child(2) button {
                 color: #262730 !important;
-                font-size: 1.15rem !important; /* <--- כאן הגדלנו את הטקסט הכללי */
+                font-size: 1.15rem !important;
             }
 
-            /* הגדלה נוספת לכותרות המשנה (למשל: "שלב 2: מילוי פרטים אישיים") */
             div[data-testid*="olumn"]:nth-child(2) h3 {
-                font-size: 1.8rem !important; /* <--- כאן הגדלנו את הכותרות */
+                font-size: 1.8rem !important;
                 color: #1f1f1f !important;
             }
             </style>
@@ -81,7 +108,7 @@ def get_user_input():
                             st.session_state.id_verified = True
                             st.rerun()
 
-        # --- שלב 2: מילוי פרטים מלא (רק אחרי אימות ID) ---
+        # --- שלב 2: מילוי פרטים מלא בעברית ---
         else:
             with st.container(border=True):
                 st.success(f"מזהה מאומת: {st.session_state.verified_id}")
@@ -90,36 +117,43 @@ def get_user_input():
                 password_raw = st.text_input("בחר סיסמה:", type="password")
                 name = st.text_input("שם מלא:")
                 phone = st.text_input("מספר טלפון:")
-                role = st.selectbox("תפקיד:", ["Student", "Tutor"])
+
+                # בחירות בעברית
+                role_ui = st.selectbox("תפקיד:", list(role_map.keys()))
 
                 st.divider()
 
-                subjects = st.multiselect("מקצועות לימוד:",
-                                          ["Math", "English", "Physics", "Biology", "Chemistry", "History",
-                                           "Computer Science"])
-                modality = st.selectbox("אופן לימוד:", ["Online", "F2F"])
+                subjects_ui = st.multiselect("מקצועות לימוד:", list(subject_map.keys()))
+                modality_ui = st.selectbox("אופן לימוד:", list(modality_map.keys()))
 
                 st.write("זמינות:")
-                days = st.multiselect("ימים:",
-                                      ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"])
+                days_ui = st.multiselect("ימים:", list(day_map.keys()))
 
-                # מילוי שעות דינמי לכל יום
+                # מילוי שעות דינמי לכל יום שנבחר בעברית
                 hours_list = []
-                if days:
+                if days_ui:
                     st.write("הגדר שעות לימים שנבחרו:")
-                    for day in days:
-                        chosen_time = st.time_input(f"בחר שעה עבור {day}", datetime.time(19, 0), key=f"time_{day}")
+                    for day_hebrew in days_ui:
+                        chosen_time = st.time_input(f"בחר שעה עבור {day_hebrew}", datetime.time(19, 0),
+                                                    key=f"time_{day_hebrew}")
                         hours_list.append(chosen_time.strftime("%H:%M"))
 
                 st.divider()
                 submit_all = st.button("סיום הרשמה ושמירה")
 
                 if submit_all:
-                    if not name or not password_raw or not subjects or not days:
+                    if not name or not password_raw or not subjects_ui or not days_ui:
                         st.error("חובה למלא את כל השדות ולבחור לפחות מקצוע אחד ויום אחד.")
                     else:
                         pwd_hash = hashlib.sha256(password_raw.encode()).hexdigest()
 
+                        # ── כאן קורה קסם התרגום בשקט מאחורי הקלעים לאנגלית! ──
+                        role = role_map[role_ui]
+                        subjects = [subject_map[s] for s in subjects_ui]
+                        modality = modality_map[modality_ui]
+                        days = [day_map[d] for d in days_ui]
+
+                        # המבנה המקורי שלך באנגלית נשמר ב-100% כדי לא לשבור את ה-CSV
                         new_entry = {
                             "Pass": [pwd_hash],
                             "ID": [st.session_state.verified_id],
@@ -152,6 +186,7 @@ def get_user_input():
                         st.session_state.verified_id = ""
                         st.session_state.user_id = temp_id
 
+                        # ניתוב לפי התפקיד באנגלית (כמו שהיה תמיד)
                         if role == "Student":
                             st.session_state.page = 'find'
                         else:
