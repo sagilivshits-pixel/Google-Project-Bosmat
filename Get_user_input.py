@@ -39,7 +39,7 @@ def get_user_input():
         "יום שבת": "Saturday"
     }
 
-    # ── הזרקת CSS חסין עדכונים לביטול השקיפות, יצירת קופסה והגדלת פונט ──────────────────
+    # ── הזרקת CSS חסין עדכונים ──────────────────
     st.markdown("""
             <style>
             div[data-testid*="olumn"]:nth-child(2) > div {
@@ -60,13 +60,19 @@ def get_user_input():
                 padding: 0 !important;
             }
 
-            div[data-testid*="olumn"]:nth-child(2) input, 
+            /* שומר על פונט מוגדל עבור התוויות (Labels), הכפתורים והטקסט הרגיל */
             div[data-testid*="olumn"]:nth-child(2) label,
             div[data-testid*="olumn"]:nth-child(2) p,
             div[data-testid*="olumn"]:nth-child(2) span,
             div[data-testid*="olumn"]:nth-child(2) button {
                 color: #262730 !important;
                 font-size: 1.15rem !important;
+            }
+
+            /* 🌟 התיקון: מקטין חזרה את הטקסט *בתוך* תיבות ההקלדה עצמן כדי שלא ייחתך 🌟 */
+            div[data-testid*="olumn"]:nth-child(2) input {
+                color: #262730 !important;
+                font-size: 1rem !important; 
             }
 
             div[data-testid*="olumn"]:nth-child(2) h3 {
@@ -147,13 +153,12 @@ def get_user_input():
                     else:
                         pwd_hash = hashlib.sha256(password_raw.encode()).hexdigest()
 
-                        # ── כאן קורה קסם התרגום בשקט מאחורי הקלעים לאנגלית! ──
+                        # התרגום השקט לאנגלית
                         role = role_map[role_ui]
                         subjects = [subject_map[s] for s in subjects_ui]
                         modality = modality_map[modality_ui]
                         days = [day_map[d] for d in days_ui]
 
-                        # המבנה המקורי שלך באנגלית נשמר ב-100% כדי לא לשבור את ה-CSV
                         new_entry = {
                             "Pass": [pwd_hash],
                             "ID": [st.session_state.verified_id],
@@ -186,7 +191,7 @@ def get_user_input():
                         st.session_state.verified_id = ""
                         st.session_state.user_id = temp_id
 
-                        # ניתוב לפי התפקיד באנגלית (כמו שהיה תמיד)
+                        # ניתוב לפי התפקיד
                         if role == "Student":
                             st.session_state.page = 'find'
                         else:
