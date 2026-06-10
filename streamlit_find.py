@@ -19,7 +19,7 @@ st.markdown(
             left: auto !important;
         }
 
-        /* הסטייל של הקופסה הלבנה (מתוך Get_user_input) */
+        /* הסטייל של הקופסה הלבנה */
         div[data-testid*="olumn"]:nth-child(2) > div {
             background-color: #FFFFFF !important;
             background: #FFFFFF !important;
@@ -44,7 +44,9 @@ st.markdown(
         div[data-testid*="olumn"]:nth-child(2) p,
         div[data-testid*="olumn"]:nth-child(2) span,
         div[data-testid*="olumn"]:nth-child(2) h1,
-        div[data-testid*="olumn"]:nth-child(2) h3 {
+        div[data-testid*="olumn"]:nth-child(2) h2,
+        div[data-testid*="olumn"]:nth-child(2) h3,
+        div[data-testid*="olumn"]:nth-child(2) h4 {
             color: #262730 !important;
         }
     </style>
@@ -58,6 +60,8 @@ with st.sidebar:
     if st.button("🚪 התנתקות מהמערכת", use_container_width=True):
         st.session_state.search_done = False
         st.session_state.user_id = ""
+        if "show_tutors" in st.session_state:
+            st.session_state.show_tutors = False
         st.session_state.page = 'home'
         st.rerun()
 
@@ -91,91 +95,103 @@ def save_appointment(student_id, tutor_info):
         json.dump(appointments, f, indent=4, ensure_ascii=False)
 
 
-# --- 4. לוגיקה ראשית בתוך הקופסה הלבנה ---
-if "search_done" not in st.session_state:
-    st.session_state.search_done = False
+# --- 4. לוגיקה ראשית אוטומטית בתוך הקופסה הלבנה ---
+if "show_tutors" not in st.session_state:
+    st.session_state.show_tutors = False
 
-# יצירת מבנה עמודות למרכוז (העמודה השנייה תהפוך לקופסה הלבנה)
 spacer_right, center_col, spacer_left = st.columns([1, 3, 1])
 
 with center_col:
-    st.markdown("<h1 style='text-align: center;'>מערכת התאמת מורים</h1>", unsafe_allow_html=True)
-    st.write("")  # מרווח קטן
+    user_id = st.session_state.get("user_id", "").strip()
 
-    if not st.session_state.search_done:
-        with st.form("search_form"):
-            st.subheader("שלום! הקלד תעודת זהות כדי להתחיל:")
-            raw_input = st.text_input("תעודת זהות (9 ספרות):", max_chars=20)
-            if st.form_submit_button("חפש מורים זמינים"):
-                st.session_state.user_id = raw_input.strip()
-                st.session_state.search_done = True
-                st.rerun()
+    if not user_id:
+        st.error("שגיאה: לא נמצא משתמש מחובר. אנא חזור לדף הבית והתחבר מחדש.")
     else:
-        user_id = st.session_state.user_id
-        find_a_match()  # הרצת לוגיקת ההתאמה
+        # שליפת שם הסטודנט
+        if os.path.exists('syn_data.csv'):
+            df_users = pd.read_csv('syn_data.csv', dtype={'ID': str})
+            student_row = df_users[df_users['ID'].astype(str).str.strip() == user_id]
+            student_name = student_row['Name'].iloc[0] if not student_row.empty else "תלמיד"
+        else:
+            student_name = "תלמיד"
 
-        data = load_json('student_matches_detailed.json')
+        # השם ככותרת ראשית
+        st.markdown(f"<h2 style='text-align: center;'>שלום, {student_name}! 👋</h2>", unsafe_allow_html=True)
+        st.markdown("<h5 style='text-align: center; color: #666;'>מערכת התאמת מורים</h5>", unsafe_allow_html=True)
+        st.write("")
+
         appointments = load_json('appointments.json')
 
-        if user_id in data:
-            # הצגת פגישות קיימות
-            user_appointments = [
-                app for app in appointments
-                if str(app.get("student_id")).strip().lower() == str(user_id).strip().lower()
-            ]
+        # הצגת פגישות קיימות של המשתמש
+        user_appointments = [
+            app for app in appointments
+            if str(app.get("student_id")).strip().lower() == str(user_id).strip().lower()
+        ]
 
-            if user_appointments:
-                st.warning("📅 הפגישות שנקבעו לך:")
-                for app in user_appointments:
-                    st.info(
-                        f"**מורה:** {app['tutor_name']}  |  "
-                        f"**יום:** {app['day']}  |  "
-                        f"**שעה:** {app['hour']}  |  "
-                        f"**מקצוע:** {app.get('subject', 'כללי')}"
-                    )
-                st.divider()
+        if user_appointments:
+            st.warning("📅 הפגישות שנקבעו לך:")
+            for app in user_appointments:
+                st.info(
+                    f"**מורה:** {app['tutor_name']}  |  "
+                    f"**יום:** {app['day']}  |  "
+                    f"**שעה:** {app['hour']}  |  "
+                    f"**מקצוע:** {app.get('subject', 'כללי')}"
+                )
+            st.divider()
 
-            # סינון והצגת מורים פנויים
-            all_tutors = data[user_id]
-            available_tutors = []
-            for tutor_info in all_tutors:
-                is_booked = False
-                for app in appointments:
-                    if (str(app.get('tutor_name', '')).strip().lower() == str(
-                            tutor_info.get('Name', '')).strip().lower() and
-                            str(app.get('day', '')).strip().lower() == str(
-                                tutor_info.get('Day', '')).strip().lower() and
-                            str(app.get('hour', '')).strip().lower() == str(
-                                tutor_info.get('Hour', '')).strip().lower()):
-                        is_booked = True
-                        break
-                if not is_booked:
-                    available_tutors.append(tutor_info)
-
-            st.subheader("מורים זמינים עבורך:")
-            if not available_tutors:
-                st.info("אין כרגע תורים פנויים המתאימים לדרישות שלך.")
-            else:
-                for index, tutor_info in enumerate(available_tutors):
-                    # כל מורה מופיע בקופסה כחולה/ירוקה בתוך המתחם הלבן
-                    with st.container():
-                        st.info(
-                            f"👤 **מורה:** {tutor_info['Name']}  \n"
-                            f"📚 **מקצוע:** {tutor_info.get('Subject', 'כללי')}  \n"
-                            f"⏰ **מועד:** {tutor_info['Day']} בשעה {tutor_info['Hour']}"
-                        )
-                        if st.button(f"קביעת פגישה עם {tutor_info['Name']}", key=f"btn_{index}",
-                                     use_container_width=True):
-                            save_appointment(user_id, tutor_info)
-                            st.toast("הפגישה נקבעה בהצלחה!")
-                            st.rerun()
-                    st.write("")  # מרווח בין מורים
-
-            if st.button("🔎 חיפוש חדש"):
-                st.session_state.search_done = False
+        # 🌟 כפתור החיפוש - מפעיל את find_a_match() רק כשלחוצים עליו 🌟
+        if not st.session_state.show_tutors:
+            if st.button("🔎 חיפוש מורים זמינים", use_container_width=True):
+                with st.spinner('מחפש את המורים המתאימים ביותר עבורך...'):
+                    find_a_match()  # הפעלת הפונקציה רק בעת הלחיצה
+                st.session_state.show_tutors = True
                 st.rerun()
         else:
-            st.error("מצטערים, תעודת הזהות לא נמצאה במערכת.")
-            if st.button("חזרה לחיפוש"):
-                st.session_state.search_done = False
-                st.rerun()
+            data = load_json('student_matches_detailed.json')
+
+            if user_id in data:
+                all_tutors = data[user_id]
+                available_tutors = []
+                # סינון מורים פנויים
+                for tutor_info in all_tutors:
+                    is_booked = False
+                    for app in appointments:
+                        if (str(app.get('tutor_name', '')).strip().lower() == str(
+                                tutor_info.get('Name', '')).strip().lower() and
+                                str(app.get('day', '')).strip().lower() == str(
+                                    tutor_info.get('Day', '')).strip().lower() and
+                                str(app.get('hour', '')).strip().lower() == str(
+                                    tutor_info.get('Hour', '')).strip().lower()):
+                            is_booked = True
+                            break
+                    if not is_booked:
+                        available_tutors.append(tutor_info)
+
+                st.subheader("מורים זמינים עבורך:")
+                if not available_tutors:
+                    st.info("אין כרגע תורים פנויים המתאימים לדרישות שלך.")
+                else:
+                    for index, tutor_info in enumerate(available_tutors):
+                        with st.container():
+                            st.info(
+                                f"👤 **מורה:** {tutor_info['Name']}  \n"
+                                f"📚 **מקצוע:** {tutor_info.get('Subject', 'כללי')}  \n"
+                                f"⏰ **מועד:** {tutor_info['Day']} בשעה {tutor_info['Hour']}"
+                            )
+                            if st.button(f"קביעת פגישה עם {tutor_info['Name']}", key=f"btn_{index}",
+                                         use_container_width=True):
+                                save_appointment(user_id, tutor_info)
+                                st.toast("הפגישה נקבעה בהצלחה!")
+                                st.rerun()
+                        st.write("")  # מרווח בין מורים
+
+                # 🌟 כפתור רענון - מפעיל את find_a_match() מחדש 🌟
+                st.divider()
+                c1, c2, c3 = st.columns([1, 2, 1])
+                with c2:
+                    if st.button("🔄 רענן רשימה", use_container_width=True):
+                        with st.spinner('מעדכן את רשימת המורים...'):
+                            find_a_match() # הפעלת הפונקציה מחדש כדי לשאוב נתונים עדכניים
+                        st.rerun()
+            else:
+                st.error("מצטערים, לא נמצאו התאמות עבורך במערכת.")

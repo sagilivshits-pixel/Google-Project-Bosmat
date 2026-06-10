@@ -39,9 +39,10 @@ def get_user_input():
         "יום שבת": "Saturday"
     }
 
-    # ── הזרקת CSS חסין עדכונים ──────────────────
+    # ── הזרקת CSS מתוקן - ללא פגיעה בתיבות ההקלדה ──────────────────
     st.markdown("""
             <style>
+            /* 1. הקופסה הלבנה */
             div[data-testid*="olumn"]:nth-child(2) > div {
                 background-color: #FFFFFF !important;
                 background: #FFFFFF !important;
@@ -52,6 +53,7 @@ def get_user_input():
                 border: 1px solid #EAEAEA !important;
             }
 
+            /* 2. מניעת כפילות רקעים בתוך הקופסה */
             div[data-testid="stVerticalBlockBorderWrapper"], 
             div[data-testid="stForm"] {
                 background-color: transparent !important;
@@ -60,21 +62,16 @@ def get_user_input():
                 padding: 0 !important;
             }
 
-            /* שומר על פונט מוגדל עבור התוויות (Labels), הכפתורים והטקסט הרגיל */
-            div[data-testid*="olumn"]:nth-child(2) label,
-            div[data-testid*="olumn"]:nth-child(2) p,
-            div[data-testid*="olumn"]:nth-child(2) span,
+            /* 🌟 התיקון: הגדלת התוויות (Labels) שמעל השדות והכפתורים *בלבד*! 
+               זה מבטיח שהטקסט בתוך התיבה עצמה יישאר בגודל הסטנדרטי ולא ייחתך 🌟 */
+            div[data-testid*="olumn"]:nth-child(2) label p,
+            div[data-testid*="olumn"]:nth-child(2) button p,
             div[data-testid*="olumn"]:nth-child(2) button {
                 color: #262730 !important;
                 font-size: 1.15rem !important;
             }
 
-            /* 🌟 התיקון: מקטין חזרה את הטקסט *בתוך* תיבות ההקלדה עצמן כדי שלא ייחתך 🌟 */
-            div[data-testid*="olumn"]:nth-child(2) input {
-                color: #262730 !important;
-                font-size: 1rem !important; 
-            }
-
+            /* 3. הגדלת הכותרות של השלבים (H3) */
             div[data-testid*="olumn"]:nth-child(2) h3 {
                 font-size: 1.8rem !important;
                 color: #1f1f1f !important;
