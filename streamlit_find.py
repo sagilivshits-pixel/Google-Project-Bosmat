@@ -95,6 +95,26 @@ def save_appointment(student_id, tutor_info):
         json.dump(appointments, f, indent=4, ensure_ascii=False)
 
 
+# 🌟 פונקציה חדשה: ביטול פגישה מתוך ה-JSON 🌟
+def cancel_appointment(student_id, tutor_name, day, hour):
+    filename = 'appointments.json'
+    appointments = load_json(filename)
+
+    # סינון החוצה של הפגישה הספציפית הזו
+    updated_appointments = [
+        app for app in appointments
+        if not (
+                str(app.get("student_id")).strip().lower() == str(student_id).strip().lower() and
+                str(app.get("tutor_name")).strip().lower() == str(tutor_name).strip().lower() and
+                str(app.get("day")).strip().lower() == str(day).strip().lower() and
+                str(app.get("hour")).strip().lower() == str(hour).strip().lower()
+        )
+    ]
+
+    with open(filename, 'w', encoding='utf-8') as f:
+        json.dump(updated_appointments, f, indent=4, ensure_ascii=False)
+
+
 # --- 4. לוגיקה ראשית אוטומטית בתוך הקופסה הלבנה ---
 if "show_tutors" not in st.session_state:
     st.session_state.show_tutors = False
@@ -130,20 +150,28 @@ with center_col:
 
         if user_appointments:
             st.warning("📅 הפגישות שנקבעו לך:")
-            for app in user_appointments:
-                st.info(
-                    f"**מורה:** {app['tutor_name']}  |  "
-                    f"**יום:** {app['day']}  |  "
-                    f"**שעה:** {app['hour']}  |  "
-                    f"**מקצוע:** {app.get('subject', 'כללי')}"
-                )
+            for index, app in enumerate(user_appointments):
+                with st.container():
+                    st.info(
+                        f"**מורה:** {app['tutor_name']}  |  "
+                        f"**יום:** {app['day']}  |  "
+                        f"**שעה:** {app['hour']}  |  "
+                        f"**מקצוע:** {app.get('subject', 'כללי')}"
+                    )
+                    # 🌟 כפתור ביטול עבור התלמיד 🌟
+                    if st.button(f"❌ ביטול פגישה עם {app['tutor_name']}", key=f"cancel_stud_{index}",
+                                 use_container_width=True):
+                        cancel_appointment(user_id, app['tutor_name'], app['day'], app['hour'])
+                        st.toast("הפגישה בבוטלה בהצלחה!")
+                        st.rerun()
+                st.write("")
             st.divider()
 
-        # 🌟 כפתור החיפוש - מפעיל את find_a_match() רק כשלחוצים עליו 🌟
+        # כפתור להצגת תוצאות החיפוש
         if not st.session_state.show_tutors:
             if st.button("🔎 חיפוש מורים זמינים", use_container_width=True):
                 with st.spinner('מחפש את המורים המתאימים ביותר עבורך...'):
-                    find_a_match()  # הפעלת הפונקציה רק בעת הלחיצה
+                    find_a_match()
                 st.session_state.show_tutors = True
                 st.rerun()
         else:
@@ -185,13 +213,13 @@ with center_col:
                                 st.rerun()
                         st.write("")  # מרווח בין מורים
 
-                # 🌟 כפתור רענון - מפעיל את find_a_match() מחדש 🌟
+                # כפתור רענון ממורכז
                 st.divider()
                 c1, c2, c3 = st.columns([1, 2, 1])
                 with c2:
                     if st.button("🔄 רענן רשימה", use_container_width=True):
                         with st.spinner('מעדכן את רשימת המורים...'):
-                            find_a_match() # הפעלת הפונקציה מחדש כדי לשאוב נתונים עדכניים
+                            find_a_match()
                         st.rerun()
             else:
                 st.error("מצטערים, לא נמצאו התאמות עבורך במערכת.")
